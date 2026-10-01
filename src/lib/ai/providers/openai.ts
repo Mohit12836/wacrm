@@ -8,7 +8,21 @@ import {
   type ProviderArgs,
 } from './shared'
 
-const OPENAI_URL = 'https://api.openai.com/v1/chat/completions'
+function resolveEndpoint(apiKey: string): string {
+  if (process.env.OPENAI_BASE_URL) {
+    return `${process.env.OPENAI_BASE_URL.replace(/\/+$/, '')}/chat/completions`
+  }
+  if (apiKey.startsWith('gsk_')) {
+    return 'https://api.groq.com/openai/v1/chat/completions'
+  }
+  if (apiKey.startsWith('AIzaSy') || apiKey.startsWith('AQ.')) {
+    return 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
+  }
+  if (apiKey.startsWith('sk-or-')) {
+    return 'https://openrouter.ai/api/v1/chat/completions'
+  }
+  return 'https://api.openai.com/v1/chat/completions'
+}
 
 interface OpenAiResponse {
   choices?: { message?: { content?: string } }[]
@@ -20,16 +34,16 @@ interface OpenAiResponse {
 }
 
 /**
- * Call OpenAI's Chat Completions endpoint with the caller's own key.
- * Returns the raw assistant text + token usage (handoff parsing happens
- * in `generateReply`).
+ * Call OpenAI-compatible Chat Completions endpoint (OpenAI, Groq, Gemini, OpenRouter).
+ * Returns the raw assistant text + token usage (handoff parsing happens in `generateReply`).
  */
 export async function generateOpenAi(args: ProviderArgs): Promise<ProviderResult> {
   const { apiKey, model, systemPrompt, messages, timeoutMs } = args
+  const url = resolveEndpoint(apiKey)
 
   let res: Response
   try {
-    res = await fetch(OPENAI_URL, {
+    res = await fetch(url, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -41,7 +55,7 @@ export async function generateOpenAi(args: ProviderArgs): Promise<ProviderResult
           { role: 'system', content: systemPrompt },
           ...mergeConsecutive(messages),
         ],
-        max_completion_tokens: MAX_OUTPUT_TOKENS,
+        max_tokens: MAX_OUTPUT_TOKENS,
       }),
       signal: AbortSignal.timeout(timeoutMs),
     })
