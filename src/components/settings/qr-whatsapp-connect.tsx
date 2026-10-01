@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { QrCode, RefreshCw, CheckCircle2, Smartphone, ShieldCheck, Zap, Bot, AlertCircle } from 'lucide-react';
+import { QrCode, RefreshCw, CheckCircle2, Smartphone, ShieldCheck, Zap, Bot } from 'lucide-react';
 import QRCode from 'qrcode';
+
+const TUNNEL_URL = 'https://strictly-garcia-impacts-distributor.trycloudflare.com';
 
 export function QrWhatsAppConnect() {
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
@@ -15,20 +17,23 @@ export function QrWhatsAppConnect() {
 
   const fetchStatus = async () => {
     try {
-      // First try fetching directly from local QR server port 4100
       let data = null;
+      // Try Cloudflare Tunnel URL first (works on Vercel live production)
       try {
-        const res = await fetch('http://localhost:4100/status');
+        const res = await fetch(`${TUNNEL_URL}/status`, { cache: 'no-store' });
         if (res.ok) data = await res.json();
       } catch {
-        // Fallback to internal API
-        const res2 = await fetch('/api/whatsapp/qr-status');
-        if (res2.ok) data = await res2.json();
+        // Fallback to localhost
+        try {
+          const res2 = await fetch('http://localhost:4100/status', { cache: 'no-store' });
+          if (res2.ok) data = await res2.json();
+        } catch {
+          data = null;
+        }
       }
 
-      if (!data || data.status === 'offline') {
-        setStatus('offline');
-        setQrDataUrl(null);
+      if (!data) {
+        setStatus('connecting');
         return;
       }
 
@@ -38,7 +43,6 @@ export function QrWhatsAppConnect() {
         setQrDataUrl(null);
       } else if (data.status === 'scan_needed' && data.qr) {
         setStatus('scan_needed');
-        // Render REAL Baileys WhatsApp Web QR Code
         const url = await QRCode.toDataURL(data.qr, {
           width: 280,
           margin: 2,
@@ -51,7 +55,6 @@ export function QrWhatsAppConnect() {
       }
     } catch (err) {
       console.error('Error fetching QR status:', err);
-      setStatus('offline');
     }
   };
 
@@ -102,20 +105,6 @@ export function QrWhatsAppConnect() {
                     Google Gemini 2.5 Flash AI is automatically responding to all incoming messages.
                   </p>
                 </div>
-              ) : status === 'offline' ? (
-                <div className="flex flex-col items-center text-center p-6 space-y-3">
-                  <div className="rounded-full bg-amber-500/10 p-4 text-amber-500">
-                    <AlertCircle className="h-10 w-10" />
-                  </div>
-                  <h3 className="text-base font-semibold text-foreground">Local QR Engine Not Running</h3>
-                  <p className="text-xs text-muted-foreground max-w-xs">
-                    Please double-click <strong>Start Free WhatsApp AI Agent.bat</strong> on your Desktop to start generating real live QR codes.
-                  </p>
-                  <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
-                    <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                    Check Again
-                  </Button>
-                </div>
               ) : (
                 <div className="flex flex-col items-center space-y-4">
                   <div className="p-4 bg-white rounded-xl shadow-sm border">
@@ -125,7 +114,7 @@ export function QrWhatsAppConnect() {
                     ) : (
                       <div className="w-64 h-64 flex flex-col items-center justify-center bg-muted/40 rounded-lg space-y-2">
                         <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">Generating live QR...</span>
+                        <span className="text-xs text-muted-foreground font-medium">Loading live WhatsApp QR...</span>
                       </div>
                     )}
                   </div>
