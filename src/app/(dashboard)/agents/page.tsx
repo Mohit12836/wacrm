@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Bot, Sparkles, Settings2, BarChart3 } from 'lucide-react';
+import { Bot, Sparkles, Settings2, BarChart3, QrCode } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AiPlayground } from '@/components/agents/ai-playground';
 import { AiUsageCard } from '@/components/agents/ai-usage';
 import { AiConfig } from '@/components/settings/ai-config';
+import { QrWhatsAppConnect } from '@/components/settings/qr-whatsapp-connect';
 import { useAuth } from '@/hooks/use-auth';
 import { canEditSettings } from '@/lib/auth/roles';
 
-type Tab = 'playground' | 'setup' | 'usage';
+type Tab = 'playground' | 'setup' | 'qr_connect' | 'usage';
 
 export default function AgentsPage() {
   const t = useTranslations('Agents');
@@ -63,6 +64,9 @@ export default function AgentsPage() {
             <TabsTrigger value="setup">
               <Settings2 className="mr-1.5 h-4 w-4" /> {t('tabSetup')}
             </TabsTrigger>
+            <TabsTrigger value="qr_connect" className="text-emerald-500 data-[state=active]:text-emerald-500">
+              <QrCode className="mr-1.5 h-4 w-4" /> QR WhatsApp Connect (Free)
+            </TabsTrigger>
             {canViewUsage && (
               <TabsTrigger value="usage">
                 <BarChart3 className="mr-1.5 h-4 w-4" /> {t('tabUsage')}
@@ -76,6 +80,10 @@ export default function AgentsPage() {
 
           <TabsContent value="setup" className="mt-4">
             <AiConfig />
+          </TabsContent>
+
+          <TabsContent value="qr_connect" className="mt-4">
+            <QrWhatsAppConnect />
           </TabsContent>
 
           {canViewUsage && (
