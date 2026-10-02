@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Bot, Sparkles, Settings2, BarChart3, QrCode, LayoutGrid, Brain, Sliders } from 'lucide-react';
