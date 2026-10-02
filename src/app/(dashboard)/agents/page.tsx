@@ -2,41 +2,27 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Bot, Sparkles, Settings2, BarChart3, QrCode } from 'lucide-react';
+import { Bot, Sparkles, Settings2, BarChart3, QrCode, LayoutGrid } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AiPlayground } from '@/components/agents/ai-playground';
 import { AiUsageCard } from '@/components/agents/ai-usage';
 import { AiConfig } from '@/components/settings/ai-config';
 import { QrWhatsAppConnect } from '@/components/settings/qr-whatsapp-connect';
+import { AiAgentMarketplace } from '@/components/agents/ai-agent-marketplace';
 import { useAuth } from '@/hooks/use-auth';
 import { canEditSettings } from '@/lib/auth/roles';
 
-type Tab = 'playground' | 'setup' | 'qr_connect' | 'usage';
+type Tab = 'marketplace' | 'playground' | 'setup' | 'qr_connect' | 'usage';
 
 export default function AgentsPage() {
   const t = useTranslations('Agents');
   const { accountRole } = useAuth();
   const canViewUsage = accountRole ? canEditSettings(accountRole) : false;
-  const [tab, setTab] = useState<Tab>('playground');
+  const [tab, setTab] = useState<Tab>('marketplace');
   const [decided, setDecided] = useState(false);
 
-  // Land first-time users on Setup, returning users on the Playground.
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch('/api/ai/config');
-        const data = await res.json().catch(() => ({}));
-        if (!cancelled) setTab(data?.configured ? 'playground' : 'setup');
-      } catch {
-        if (!cancelled) setTab('setup');
-      } finally {
-        if (!cancelled) setDecided(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    setDecided(true);
   }, []);
 
   return (
@@ -44,11 +30,11 @@ export default function AgentsPage() {
       <div className="flex items-center gap-2">
         <Bot className="h-6 w-6 text-primary" />
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          {t('title')}
+          AI Employee & Agents Hub
         </h1>
       </div>
       <p className="mt-1 text-sm text-muted-foreground">
-        {t('description')}
+        Manage your autonomous 24/7 AI salesmen, booking assistants, and payment closers.
       </p>
 
       {decided && (
@@ -57,7 +43,10 @@ export default function AgentsPage() {
           onValueChange={(v) => setTab(v as Tab)}
           className="mt-6"
         >
-          <TabsList>
+          <TabsList className="flex flex-wrap h-auto gap-1">
+            <TabsTrigger value="marketplace" className="text-emerald-500 data-[state=active]:text-emerald-500 font-semibold">
+              <LayoutGrid className="mr-1.5 h-4 w-4" /> AI Agent Store
+            </TabsTrigger>
             <TabsTrigger value="playground">
               <Sparkles className="mr-1.5 h-4 w-4" /> {t('tabPlayground')}
             </TabsTrigger>
@@ -73,6 +62,10 @@ export default function AgentsPage() {
               </TabsTrigger>
             )}
           </TabsList>
+
+          <TabsContent value="marketplace" className="mt-4">
+            <AiAgentMarketplace />
+          </TabsContent>
 
           <TabsContent value="playground" className="mt-4">
             <AiPlayground onGoToSetup={() => setTab('setup')} />

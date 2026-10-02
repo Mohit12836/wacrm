@@ -9,6 +9,7 @@ import { Header } from "@/components/layout/header";
 import { AccountAccessAlert } from "@/components/layout/account-access-alert";
 import { PresenceHeartbeat } from "@/components/presence/presence-heartbeat";
 import { BrowserNotificationsListener } from "@/components/notifications/browser-notifications-listener";
+import { MobileNavDock } from "@/components/layout/mobile-nav-dock";
 
 // Auth-gated dashboard shell. Extracted from the layout so the layout
 // itself can stay a server component and export metadata (noindex) —
@@ -62,6 +63,7 @@ function DashboardShellInner({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+      <MobileNavDock />
     </div>
   );
 }
