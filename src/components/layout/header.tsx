@@ -73,8 +73,18 @@ export function Header({ onOpenSidebar }: HeaderProps) {
         </h1>
       </div>
 
-      <div className="flex items-center gap-1 sm:gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <ModeToggle />
+
+        <button
+          type="button"
+          onClick={signOut}
+          title="Sign Out / Logout"
+          className="flex items-center gap-1.5 rounded-md border border-red-500/20 bg-red-500/10 px-2.5 py-1.5 text-xs font-medium text-red-500 transition-all hover:bg-red-500/20 hover:text-red-400 active:scale-95"
+        >
+          <LogOut className="size-3.5" />
+          <span className="hidden sm:inline">Sign Out</span>
+        </button>
 
         <DropdownMenu>
         <DropdownMenuTrigger

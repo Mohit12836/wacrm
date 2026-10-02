@@ -388,13 +388,22 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
               <DropdownMenuSeparator className="bg-border" />
               <DropdownMenuItem
                 onClick={signOut}
-                className="text-popover-foreground focus:bg-accent focus:text-accent-foreground"
+                className="text-red-500 focus:bg-red-500/10 focus:text-red-500"
               >
                 <LogOut className="size-4" />
                 {t("menuSignOut")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <button
+            type="button"
+            onClick={signOut}
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-500 transition-all duration-200 hover:bg-red-500/20 hover:text-red-400 active:scale-[0.98]"
+          >
+            <LogOut className="size-3.5" />
+            <span>Sign Out / Logout</span>
+          </button>
         </div>
       </aside>
     </>
