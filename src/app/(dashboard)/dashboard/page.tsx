@@ -9,7 +9,16 @@ import {
   UserPlus,
   DollarSign,
   Send,
+  Brain,
+  Bot,
+  Sparkles,
+  ShieldCheck,
+  ArrowRight,
+  Zap,
 } from 'lucide-react'
+import Link from 'next/link'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 import {
   loadActivity,
@@ -129,6 +138,39 @@ export default function DashboardPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           {t('description')}
         </p>
+      </div>
+
+      {/* AI Sales Brain & Staging Approval Radar Widget */}
+      <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-background to-emerald-500/10 p-4 sm:p-5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500 border border-amber-500/25">
+              <Brain className="h-6 w-6 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-base font-bold text-foreground">
+                  AI Brain Learning & Approval Radar
+                </h2>
+                <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 text-[10px] font-bold">
+                  3 New Rules Waiting for Your Approval
+                </Badge>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                Your AI Sales Employees learned 3 new business pricing &amp; timing rules from recent customer chats. Review and approve them before they go live.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              render={<Link href="/agents" />}
+              className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold gap-1.5 shadow-sm"
+            >
+              Review &amp; Approve Rules <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Metric cards */}
