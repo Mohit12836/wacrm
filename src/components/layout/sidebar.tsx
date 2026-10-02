@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useTotalUnread } from "@/hooks/use-total-unread";
 import { useUnreadNotifications } from "@/hooks/use-unread-notifications";
+import { LogoutConfirmDialog } from "@/components/layout/logout-dialog";
 import {
   Bell,
   Bot,
@@ -117,7 +118,8 @@ import { useTranslations } from "next-intl";
 export function Sidebar({ open = false, onClose }: SidebarProps) {
   const t = useTranslations("Sidebar");
   const pathname = usePathname();
-  const { profile, profileLoading, account, accountRole, signOut } = useAuth();
+  const { profile, profileLoading, account, accountRole } = useAuth();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const totalUnread = useTotalUnread();
   const unreadNotifications = useUnreadNotifications();
   // Only surface the account-name strip when it actually carries
@@ -331,81 +333,89 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
               ) : null}
             </div>
           ) : null}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors hover:bg-muted/60 focus:bg-muted/60 focus:outline-none data-popup-open:bg-muted/60">
-              <Avatar className="size-8 shrink-0">
-                {profile?.avatar_url ? (
-                  <AvatarImage
-                    src={profile.avatar_url}
-                    alt={profile.full_name ?? t("defaultAvatar")}
-                  />
-                ) : null}
-                <AvatarFallback className="bg-primary/10 text-sm font-medium text-primary">
-                  {profile?.full_name?.charAt(0)?.toUpperCase() ??
-                    profile?.email?.charAt(0)?.toUpperCase() ??
-                    "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-foreground">
-                  {profile?.full_name ?? t("defaultUser")}
-                </p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {profile?.email ?? ""}
-                </p>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              side="top"
-              sideOffset={6}
-              className="min-w-56 bg-popover text-popover-foreground ring-border"
-            >
-              <DropdownMenuItem
-                render={
-                  <Link
-                    href="/settings?tab=profile"
-                    onClick={onClose}
-                    className="text-popover-foreground focus:bg-accent focus:text-accent-foreground"
-                  />
-                }
+          <div className="flex items-center gap-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-muted/70 focus:bg-muted/70 focus:outline-none data-popup-open:bg-muted/70">
+                <Avatar className="size-8 shrink-0 ring-1 ring-border/50">
+                  {profile?.avatar_url ? (
+                    <AvatarImage
+                      src={profile.avatar_url}
+                      alt={profile.full_name ?? t("defaultAvatar")}
+                    />
+                  ) : null}
+                  <AvatarFallback className="bg-primary/10 text-sm font-medium text-primary">
+                    {profile?.full_name?.charAt(0)?.toUpperCase() ??
+                      profile?.email?.charAt(0)?.toUpperCase() ??
+                      "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-semibold text-foreground">
+                    {profile?.full_name ?? t("defaultUser")}
+                  </p>
+                  <p className="truncate text-[11px] text-muted-foreground">
+                    {profile?.email ?? ""}
+                  </p>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                side="top"
+                sideOffset={6}
+                className="min-w-56 rounded-xl border border-border bg-popover p-1.5 shadow-xl ring-border text-popover-foreground"
               >
-                <User className="size-4" />
-                {t("menuProfile")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                render={
-                  <Link
-                    href="/settings?tab=whatsapp"
-                    onClick={onClose}
-                    className="text-popover-foreground focus:bg-accent focus:text-accent-foreground"
-                  />
-                }
-              >
-                <Settings className="size-4" />
-                {t("menuSettings")}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-border" />
-              <DropdownMenuItem
-                onClick={signOut}
-                className="text-red-500 focus:bg-red-500/10 focus:text-red-500"
-              >
-                <LogOut className="size-4" />
-                {t("menuSignOut")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem
+                  render={
+                    <Link
+                      href="/settings?tab=profile"
+                      onClick={onClose}
+                      className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition-colors text-popover-foreground hover:bg-muted focus:bg-accent focus:text-accent-foreground"
+                    />
+                  }
+                >
+                  <User className="size-4 text-muted-foreground" />
+                  {t("menuProfile")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  render={
+                    <Link
+                      href="/settings?tab=whatsapp"
+                      onClick={onClose}
+                      className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition-colors text-popover-foreground hover:bg-muted focus:bg-accent focus:text-accent-foreground"
+                    />
+                  }
+                >
+                  <Settings className="size-4 text-muted-foreground" />
+                  {t("menuSettings")}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="my-1 bg-border" />
+                <DropdownMenuItem
+                  onClick={() => setShowLogoutDialog(true)}
+                  className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-medium text-red-500 hover:bg-red-500/10 focus:bg-red-500/10 focus:text-red-500 cursor-pointer"
+                >
+                  <LogOut className="size-4 text-red-500" />
+                  {t("menuSignOut")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          <button
-            type="button"
-            onClick={signOut}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-500 transition-all duration-200 hover:bg-red-500/20 hover:text-red-400 active:scale-[0.98]"
-          >
-            <LogOut className="size-3.5" />
-            <span>Sign Out / Logout</span>
-          </button>
+            {/* Quick, sleek logout trigger with confirmation protection */}
+            <button
+              type="button"
+              onClick={() => setShowLogoutDialog(true)}
+              title="Sign Out (Safe Session Exit)"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-all hover:bg-red-500/10 hover:text-red-500 active:scale-95"
+            >
+              <LogOut className="size-4" />
+            </button>
+          </div>
         </div>
       </aside>
+
+      <LogoutConfirmDialog
+        open={showLogoutDialog}
+        onOpenChange={setShowLogoutDialog}
+      />
     </>
   );
 }
