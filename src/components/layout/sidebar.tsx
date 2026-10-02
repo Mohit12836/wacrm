@@ -211,7 +211,14 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         {/* Main navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           <ul className="flex flex-col gap-1">
-            {navItems.map((item) => {
+            {navItems
+              .filter((item) => {
+                if (item.href === "/superadmin") {
+                  return accountRole === "owner" || profile?.email === "mohit12836@gmail.com";
+                }
+                return true;
+              })
+              .map((item) => {
               const isActive =
                 pathname === item.href ||
                 (item.href !== "/dashboard" && pathname.startsWith(item.href));

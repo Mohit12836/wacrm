@@ -23,6 +23,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { useAuth } from '@/hooks/use-auth';
+import Link from 'next/link';
 
 interface Tenant {
   id: string;
@@ -37,6 +39,9 @@ interface Tenant {
 }
 
 export default function SuperAdminPage() {
+  const { accountRole, profile } = useAuth();
+  const isSuperAdmin = accountRole === 'owner' || profile?.email === 'mohit12836@gmail.com';
+
   const [tenants, setTenants] = useState<Tenant[]>([
     {
       id: '1',
@@ -127,6 +132,30 @@ export default function SuperAdminPage() {
       setGlobalRuleText('');
     }, 2500);
   };
+
+  if (!isSuperAdmin) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center p-4">
+        <Card className="max-w-md w-full text-center p-6 border-border shadow-xl">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 mb-4">
+            <Lock className="h-7 w-7" />
+          </div>
+          <CardTitle className="text-xl font-bold">Owner Access Required</CardTitle>
+          <CardDescription className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            The SuperAdmin God-Mode Cockpit is reserved exclusively for the Master SaaS Owner. Your account does not have authorization for global tenant oversight.
+          </CardDescription>
+          <div className="mt-6 flex justify-center">
+            <Button
+              render={<Link href="/dashboard" />}
+              className="rounded-xl font-semibold"
+            >
+              Return to Dashboard
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
