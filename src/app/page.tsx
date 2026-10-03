@@ -179,6 +179,10 @@ export default function LandingPage() {
               <a href="#demo" className="transition-colors hover:text-emerald-400">
                 Live Roleplay Demo
               </a>
+              <Link href="/onboarding" className="transition-colors text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
+                <Sparkles className="h-3.5 w-3.5 text-emerald-400 animate-spin" />
+                Self-Driving Setup
+              </Link>
               <a href="#features" className="transition-colors hover:text-emerald-400">
                 AI Superpowers
               </a>
@@ -193,18 +197,18 @@ export default function LandingPage() {
               </a>
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Link
                 href="/login"
-                className="text-sm font-semibold text-slate-300 hover:text-white transition-colors px-3 py-1.5"
+                className="text-sm font-semibold text-slate-300 hover:text-white transition-colors px-2 sm:px-3 py-1.5"
               >
                 Sign In
               </Link>
               <Button
-                render={<Link href="/pay/trial" />}
+                render={<Link href="/onboarding" />}
                 className="bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 rounded-xl text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-500/25 active:scale-95 transition-all"
               >
-                Start ₹99 Trial ⚡
+                Guided Setup ⚡
               </Button>
             </div>
           </div>
@@ -237,19 +241,20 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <Button
                   size="lg"
-                  render={<Link href="/pay/trial" />}
+                  render={<Link href="/onboarding" />}
                   className="w-full sm:w-auto h-13 px-9 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 hover:from-emerald-300 hover:to-cyan-300 text-slate-950 rounded-2xl text-base font-extrabold shadow-[0_0_35px_rgba(16,185,129,0.4)] active:scale-95 transition-all gap-2 animate-pulse-glow"
                 >
-                  Start 7-Day Trial for ₹99 <ArrowRight className="h-5 w-5" />
+                  Start Guided Setup (2 Mins) <ArrowRight className="h-5 w-5" />
                 </Button>
 
-                <a
-                  href="#demo"
-                  className="w-full sm:w-auto inline-flex items-center justify-center h-13 px-7 rounded-2xl border border-white/15 bg-slate-900/80 hover:bg-slate-800 text-white font-bold text-sm backdrop-blur-xl transition-all shadow-lg hover:border-emerald-500/40"
+                <Button
+                  size="lg"
+                  render={<Link href="/pay/trial" />}
+                  className="w-full sm:w-auto h-13 px-7 rounded-2xl border border-white/20 bg-slate-900/80 hover:bg-slate-800 text-white font-bold text-sm backdrop-blur-xl transition-all shadow-lg hover:border-emerald-500/40"
                 >
-                  <MessageSquare className="h-4 w-4 mr-2 text-emerald-400" />
-                  Test Live Roleplay Simulator
-                </a>
+                  <CreditCard className="h-4 w-4 mr-2 text-cyan-400" />
+                  Activate ₹99 Trial
+                </Button>
               </div>
 
               {/* Trust Badges */}
